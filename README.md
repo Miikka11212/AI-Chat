@@ -1,4 +1,4 @@
-# AI Girlfriend Chatbot with Live2D (Electron)
+# AI Girlfriend Chatbot
 
 This is an Electron-based desktop chatbot app that integrates:
 - Local LLM (via LM Studio or Ollama)
