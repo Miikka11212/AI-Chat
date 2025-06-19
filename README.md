@@ -35,6 +35,7 @@ This runs Electron and loads `index.html`. You can modify UI and chat logic free
 ## Changes
 - Change `fetch` into your address, up to what model loader you are using.
 - Change model name, make sure it is exactly what the model platform says.
+- Change personality, characteristic, after `content:` in index.html
 ---
 
 ## 🛠 Features Overview
