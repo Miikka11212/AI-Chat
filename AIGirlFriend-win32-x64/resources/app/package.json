@@ -1,0 +1,22 @@
+{
+  "name": "ai-chat",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "electron": "^36.5.0"
+  },
+  "devDependencies": {
+    "electron-packager": "^17.1.2"
+  },
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-packager . AIGirlFriend --platform=win32 --arch=x64 --overwrite"
+  }
+}

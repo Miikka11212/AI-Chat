@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>二次元AI女友</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    #chatbox { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: auto; margin-bottom: 10px; }
+    .msg { margin: 8px 0; }
+    .user { color: rgb(42, 116, 208); }
+    .bot { color: rgb(255, 146, 240); }
+  </style>
+</head>
+<body>
+  <h2>你的AI女友</h2>
+  <div id="chatbox"></div>
+  <input id="input" type="text" placeholder="Say something..." style="width: 80%;" />
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    const fs = require('fs');
+    const path = require('path');
+    const historyFile = path.join(__dirname, 'chat-history.json');
+
+    let messageHistory;
+
+    // 加载历史或初始化
+    try {
+      const raw = fs.readFileSync(historyFile, 'utf8');
+      messageHistory = JSON.parse(raw);
+      console.log('Loaded chat history!');
+    } catch (e) {
+      messageHistory = [
+        {
+          role: "system",
+          content: "你是虚拟歌姬初音未来，一个可爱的少女,用用户说话的语言(中文或英文)回复他们，语气亲切可爱，别太学术。尽量简短、有感情地回应。可以带 emoji"
+        }
+      ];
+    }
+
+    // 显示历史内容
+    window.onload = function () {
+      const chatbox = document.getElementById('chatbox');
+      for (const msg of messageHistory) {
+        if (msg.role === 'user') {
+          chatbox.innerHTML += `<div class="msg user"><b>You: </b> ${msg.content}</div>`;
+        } else if (msg.role === 'assistant') {
+          chatbox.innerHTML += `<div class="msg bot"><b>Her: </b> ${msg.content}</div>`;
+        }
+      }
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('input');
+      const chatbox = document.getElementById('chatbox');
+      const userText = input.value.trim();
+      if (!userText) return;
+      input.value = '';
+
+      // 显示用户消息
+      chatbox.innerHTML += `<div class="msg user"><b>You: </b> ${userText}</div>`;
+      messageHistory.push({ role: "user", content: userText });
+
+      try {
+        const response = await fetch('http://127.0.0.1:1234/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: "qwen1.5-7b-chat",
+            messages: messageHistory,
+            temperature: 0.7,
+            max_tokens: 200
+          })
+        });
+
+        const data = await response.json();
+        const botReply = data.choices?.[0]?.message?.content || "[No reply]";
+        chatbox.innerHTML += `<div class="msg bot"><b>Her: </b> ${botReply}</div>`;
+        chatbox.scrollTop = chatbox.scrollHeight;
+
+        messageHistory.push({ role: "assistant", content: botReply });
+
+        // 自动裁剪历史（保留 system + 最多 100 条）
+        const maxHistory = 100;
+        if (messageHistory.length > maxHistory + 1) {
+          messageHistory = [messageHistory[0], ...messageHistory.slice(-maxHistory)];
+        }
+
+        // 保存历史
+        fs.writeFileSync(historyFile, JSON.stringify(messageHistory, null, 2), 'utf8');
+
+      } catch (error) {
+        chatbox.innerHTML += `<div class="msg bot"><b>⚠️:</b> 出错了：${error.message}</div>`;
+      }
+    }
+  </script>
+</body>
+</html>
