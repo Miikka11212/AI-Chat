@@ -22,13 +22,19 @@ npm install --save-dev electron-packager
 
 ---
 
-## 💻 Development: Run App
+## Development: Run App
 
 ```bash
 npm start
 ```
 This runs Electron and loads `index.html`. You can modify UI and chat logic freely.
 
+---
+
+---
+## Changes
+- Change `fetch` into your address, up to what model loader you are using.
+- Change model name, make sure it is exactly what the model platform says.
 ---
 
 ## 🛠 Features Overview
